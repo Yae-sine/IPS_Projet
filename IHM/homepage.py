@@ -9,6 +9,8 @@ elif major==3 :
 else :
     import tkinter as tk
 
+import theme
+
 class HomePage:
     """Page d'accueil pour choisir le mode d'utilisation"""
     def __init__(self, parent, on_live_mode, on_csv_mode):
@@ -16,80 +18,102 @@ class HomePage:
         self.on_live_mode = on_live_mode
         self.on_csv_mode = on_csv_mode
         self.create_ui()
-    
+
     def create_ui(self):
-        # Frame principal avec fond clair
-        self.main_frame = tk.Frame(self.parent, bg="#f5f5f5")
+        # Frame principal
+        self.main_frame = tk.Frame(self.parent, bg=theme.BG, width=900, height=600)
         self.main_frame.pack(fill=tk.BOTH, expand=True)
-        
+
+        # Carte centrale
+        card = tk.Frame(
+            self.main_frame,
+            bg=theme.SURFACE,
+            highlightthickness=1,
+            highlightbackground=theme.BORDER,
+            padx=60,
+            pady=40,
+        )
+        card.place(relx=0.5, rely=0.5, anchor="center")
+
+        # Bandeau d'accent
+        tk.Frame(card, bg=theme.ACCENT, height=4, width=80).pack(pady=(0, 24))
+
         # Titre
-        title_frame = tk.Frame(self.main_frame, bg="#f5f5f5")
-        title_frame.pack(pady=60)
-        
         title = tk.Label(
-            title_frame,
+            card,
             text="Asservissement Moteur",
-            font=("Arial", 28, "bold"),
-            fg="#2c3e50",
-            bg="#f5f5f5"
+            font=theme.FONT_TITLE,
+            fg=theme.TEXT,
+            bg=theme.SURFACE
         )
         title.pack()
-        
+
         subtitle = tk.Label(
-            title_frame,
+            card,
             text="Système de Contrôle et Visualisation",
-            font=("Arial", 12),
-            fg="#7f8c8d",
-            bg="#f5f5f5"
+            font=theme.FONT_SUBTITLE,
+            fg=theme.MUTED,
+            bg=theme.SURFACE
         )
-        subtitle.pack(pady=8)
-        
+        subtitle.pack(pady=(6, 30))
+
         # Frame pour les boutons
-        button_frame = tk.Frame(self.main_frame, bg="#f5f5f5")
-        button_frame.pack(pady=40)
-        
+        button_frame = tk.Frame(card, bg=theme.SURFACE)
+        button_frame.pack()
+
         # Bouton Lecture Temps Réel
         self.live_button = tk.Button(
             button_frame,
-            text="Lecture Temps Réel",
-            font=("Arial", 14),
-            bg="#3498db",
+            text="▶  Lecture Temps Réel",
+            font=(theme.FONT_FAMILY, 13, "bold"),
+            bg=theme.ACCENT,
             fg="white",
-            activebackground="#2980b9",
+            activebackground=theme.ACCENT_ACTIVE,
             activeforeground="white",
-            width=22,
-            height=2,
+            width=24,
+            pady=10,
             relief="flat",
+            bd=0,
             cursor="hand2",
             command=self.on_live_clicked
         )
-        self.live_button.pack(pady=10)
-        
+        self.live_button.pack(pady=8)
+
         # Bouton Importer CSV
         self.csv_button = tk.Button(
             button_frame,
             text="Importer Fichier CSV",
-            font=("Arial", 14),
-            bg="#2ecc71",
-            fg="white",
-            activebackground="#27ae60",
+            font=(theme.FONT_FAMILY, 13, "bold"),
+            bg=theme.SURFACE_2,
+            fg=theme.TEXT,
+            activebackground=theme.BORDER,
             activeforeground="white",
-            width=22,
-            height=2,
+            width=24,
+            pady=10,
             relief="flat",
+            bd=0,
             cursor="hand2",
             command=self.on_csv_clicked
         )
-        self.csv_button.pack(pady=10)
-    
+        self.csv_button.pack(pady=8)
+
+        # Pied de page
+        tk.Label(
+            card,
+            text="ENIB · S7 · ACE — Projet 5",
+            font=theme.FONT_SMALL,
+            fg=theme.MUTED,
+            bg=theme.SURFACE
+        ).pack(pady=(28, 0))
+
     def on_live_clicked(self):
         """Callback pour le mode temps réel"""
         self.on_live_mode()
-    
+
     def on_csv_clicked(self):
         """Callback pour le mode CSV"""
         self.on_csv_mode()
-    
+
     def destroy(self):
         """Détruire la page d'accueil"""
         if hasattr(self, 'main_frame'):
@@ -99,14 +123,14 @@ class HomePage:
 if __name__ == "__main__":
     def test_live():
         print("Mode Live sélectionné")
-    
+
     def test_csv():
         print("Mode CSV sélectionné")
-    
+
     root = tk.Tk()
     root.title("Test HomePage")
     root.geometry("800x600")
-    
+
     homepage = HomePage(root, test_live, test_csv)
-    
+
     root.mainloop()

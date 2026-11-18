@@ -31,6 +31,7 @@ from views import Screen
 from controllers import Control
 from controllers_csv import ControlCSV
 from homepage import HomePage
+import theme
 
 
 actions={
@@ -52,6 +53,8 @@ class MainWindow(tk.Tk) :
         tk.Tk.__init__(self)
         self.title("IPS")
         self.option_readfile("main.opt")
+        self.configure(bg=theme.BG)
+        theme.apply_ttk(self)
         self.menubar()
         
         # Variables pour stocker les composants actuels
@@ -145,11 +148,11 @@ class MainWindow(tk.Tk) :
         
         # Frame gauche pour la visualisation
         left_frame = tk.LabelFrame(main_container, text="Visualisation")
-        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
+        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(12, 6), pady=12)
         
         # Frame droite pour les contrôles
         right_frame = tk.Frame(main_container)
-        right_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=5, pady=5)
+        right_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(6, 12), pady=12)
         
         # Créer la vue dans le frame gauche
         view = Screen(left_frame)
@@ -184,11 +187,11 @@ class MainWindow(tk.Tk) :
         
         # Frame gauche pour la visualisation
         left_frame = tk.LabelFrame(main_container, text="Visualisation - Mode CSV")
-        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=5)
+        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(12, 6), pady=12)
         
         # Frame droite pour les contrôles
         right_frame = tk.Frame(main_container)
-        right_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=5, pady=5)
+        right_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(6, 12), pady=12)
         
         # Créer la vue dans le frame gauche
         view = Screen(left_frame)

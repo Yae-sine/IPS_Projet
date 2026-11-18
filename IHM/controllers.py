@@ -19,6 +19,7 @@ else :
 from models import Communication
 from views import Screen
 from tkinter import ttk
+import theme
 
 class Control :
     @staticmethod
@@ -49,13 +50,14 @@ class Control :
         self.style = ttk.Style()
         self.style.configure(
             "Custom.TCombobox",
-            fieldbackground="#ffffff",
-            background="#e1e1e1",
-            foreground="#333333",
-            bordercolor="#999999",
-            lightcolor="#cccccc",
-            darkcolor="#333333",
-            padding=8
+            fieldbackground=theme.SURFACE,
+            background=theme.SURFACE_2,
+            foreground=theme.TEXT,
+            arrowcolor=theme.TEXT,
+            bordercolor=theme.BORDER,
+            lightcolor=theme.BORDER,
+            darkcolor=theme.BORDER,
+            padding=6
         )
 
 
@@ -106,7 +108,7 @@ class Control :
 
 
     def gui(self):
-        self.frame=tk.LabelFrame(self.parent,text="Control")
+        self.frame=tk.LabelFrame(self.parent,text="Contrôle")
         self.frame_temps = tk.Frame(self.frame)
         self.frame_rotations = tk.Frame(self.frame)
         self.frame_buttons = tk.Frame(self.frame)
@@ -184,16 +186,16 @@ class Control :
         self.pause_action = tk.Button(self.frame_buttons, text= "Pause" ,cursor="hand2", padx=20, pady=5, width=10)
 
     def gauche(self) :
-        self.direction_gauche = tk.Button(self.frame_buttons, image=self.gauche_bg, text= "Gauche" ,cursor="hand2", padx=20, pady=5)
+        self.direction_gauche = tk.Button(self.frame_buttons, image=self.gauche_bg, text= "Gauche" ,cursor="hand2", padx=20, pady=5, bg=theme.SURFACE_2, activebackground=theme.BORDER)
 
     def droite(self) :
-        self.direction_droite = tk.Button(self.frame_buttons,image=self.droite_bg, text= "Droite" , cursor="hand2", padx=20, pady=5)
+        self.direction_droite = tk.Button(self.frame_buttons,image=self.droite_bg, text= "Droite" , cursor="hand2", padx=20, pady=5, bg=theme.SURFACE_2, activebackground=theme.BORDER)
 
     def change_data_to_observe(self) :
-        self.change_data_action = tk.Button(self.frame_buttons, text= "Intensite" ,cursor="hand2", padx=20, pady=5, width=10)
+        self.change_data_action = tk.Button(self.frame_buttons, text= "Intensite" ,cursor="hand2", padx=20, pady=5, width=10, bg=theme.SURFACE_2, activebackground=theme.BORDER)
 
     def braking(self) :
-        self.brake_action = tk.Button(self.frame_rotations, text= "Frein" ,cursor="hand2", padx=20, pady=5, width=10)
+        self.brake_action = tk.Button(self.frame_rotations, text= "Frein" ,cursor="hand2", padx=20, pady=5, width=10, bg=theme.DANGER, activebackground=theme.DANGER_ACTIVE)
         
     def actions_binding(self) :
         self.scale_vitesse.bind("<ButtonRelease-1>",self.on_vitesse_action)
@@ -344,19 +346,19 @@ class Control :
         self.frame.pack(expand=1,padx=5)
         self.scale_vitesse.pack()
 
-        self.frame_temps.pack(pady=2)
-        self.scale_temps_min.pack(side="left")
+        self.frame_temps.pack(pady=6)
+        self.scale_temps_min.pack(side="left", padx=(0, 8))
         self.scale_temps_max.pack(side="left")
 
-        self.frame_calibration.pack(pady=2)
-        self.scale_facteur.pack(side="left")
+        self.frame_calibration.pack(pady=6)
+        self.scale_facteur.pack(side="left", padx=(0, 8))
         self.scale_decalage.pack(side="left")
 
-        self.frame_rotations.pack(pady=2)
+        self.frame_rotations.pack(pady=8)
         self.change_rotation.pack(side="left")
         self.brake_action.pack(side="left", padx=5)
 
-        self.frame_buttons.pack(pady=2)
+        self.frame_buttons.pack(pady=(4, 8))
         self.pause_action.pack(side="left", padx=5)
         self.direction_gauche.pack(side="left", padx=5)
         self.direction_droite.pack(side="left", padx=5)

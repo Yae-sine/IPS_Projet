@@ -10,6 +10,7 @@ else :
     import tkinter as tk
 
 from tkinter import ttk
+import theme
 
 class ControlCSV:
     """Contrôleur simplifié pour le mode CSV (pas de lecture en temps réel)"""
@@ -104,6 +105,8 @@ class ControlCSV:
             self.frame_navigation,
             image=self.gauche_bg,
             text="Gauche",
+            bg=theme.SURFACE_2,
+            activebackground=theme.BORDER,
             cursor="hand2",
             padx=20,
             pady=5
@@ -114,6 +117,8 @@ class ControlCSV:
             self.frame_navigation,
             image=self.droite_bg,
             text="Droite",
+            bg=theme.SURFACE_2,
+            activebackground=theme.BORDER,
             cursor="hand2",
             padx=20,
             pady=5
@@ -216,15 +221,15 @@ class ControlCSV:
     def layout(self, side="top"):
         self.frame.pack(expand=1, padx=5)
 
-        self.frame_temps.pack(pady=2)
-        self.scale_temps_min.pack(side="left")
+        self.frame_temps.pack(pady=6)
+        self.scale_temps_min.pack(side="left", padx=(0, 8))
         self.scale_temps_max.pack(side="left")
 
-        self.frame_calibration.pack(pady=2)
-        self.scale_facteur.pack(side="left")
+        self.frame_calibration.pack(pady=6)
+        self.scale_facteur.pack(side="left", padx=(0, 8))
         self.scale_decalage.pack(side="left")
 
-        self.frame_navigation.pack(pady=2)
+        self.frame_navigation.pack(pady=8)
         self.direction_gauche.pack(side="left", padx=5)
         self.direction_droite.pack(side="left", padx=5)
 

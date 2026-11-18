@@ -20,6 +20,7 @@ else :
 from models import Communication
 from observer import Observer
 import numpy as np
+import theme
 
 
 def find_last_subarray_index(L, P): # Je veux chercher la liste P dans L
@@ -44,7 +45,7 @@ def find_last_subarray_index(L, P): # Je veux chercher la liste P dans L
 
 
 class Screen(Observer) :
-    def __init__(self,parent,bg="white",largeur=150,hauteur=60):
+    def __init__(self,parent,bg=theme.PLOT_BG,largeur=190,hauteur=78):
         self.parent=parent
         self.bg=bg
         self.largeur,self.hauteur=largeur,hauteur
@@ -125,27 +126,43 @@ class Screen(Observer) :
     def set_parent(self,parent) :
         self.parent=parent
     def gui(self) :
-        self.frame = tk.Frame(self.parent)
+        self.frame = tk.Frame(self.parent, bg=theme.BG)
 
-        self.vitesse = tk.Canvas(self.frame, width=self.largeur, height=self.hauteur, bg="black", highlightthickness=2, highlightbackground="gray")
-        self.intensite = tk.Canvas(self.frame, width=self.largeur, height=self.hauteur, bg="black", highlightthickness=2, highlightbackground="gray")
+        kpi = dict(width=self.largeur, height=self.hauteur, bg=theme.SURFACE,
+                   highlightthickness=1, highlightbackground=theme.BORDER)
+        self.vitesse = tk.Canvas(self.frame, **kpi)
+        self.intensite = tk.Canvas(self.frame, **kpi)
 
-        self.temps_aservissement = tk.Canvas(self.frame, width=self.largeur, height=self.hauteur, bg="black", highlightthickness=2, highlightbackground="gray")
+        self.temps_aservissement = tk.Canvas(self.frame, **kpi)
 
-        self.visualisation=tk.Canvas(self.parent,bg=self.bg,width=600,height=300, background="black")
+        self.visualisation=tk.Canvas(self.parent,bg=self.bg,width=600,height=300,
+                                     highlightthickness=1, highlightbackground=theme.BORDER)
+        # Les textes de valeur sont créés en premier dans chaque canvas
+        # (même identifiant d'item dans les trois canvas).
+        value_y = int(self.hauteur * 0.64)
         self.text_vitesse = self.vitesse.create_text(
-            self.largeur - 10, self.hauteur // 2,
-            text="--", fill="lime", font=("Arial", 24, "bold"), anchor="e"
+            self.largeur - 14, value_y,
+            text="--", fill=theme.SPEED, font=theme.FONT_KPI, anchor="e"
         )
         self.text_intensite = self.intensite.create_text(
-            self.largeur - 10, self.hauteur // 2,
-            text="--", fill="cyan", font=("Arial", 24, "bold"), anchor="e"
+            self.largeur - 14, value_y,
+            text="--", fill=theme.CURRENT, font=theme.FONT_KPI, anchor="e"
         )
         self.text_temps_aservissement = self.temps_aservissement.create_text(
-            self.largeur - 10, self.hauteur // 2,
-            text="--", fill="red", font=("Arial", 24, "bold"), anchor="e"
+            self.largeur - 14, value_y,
+            text="--", fill=theme.MARKER, font=theme.FONT_KPI, anchor="e"
         )
-        
+
+        # Titres et barre de couleur des cartes
+        for canvas, caption, color in (
+            (self.vitesse, "VITESSE", theme.SPEED),
+            (self.intensite, "COURANT", theme.CURRENT),
+            (self.temps_aservissement, "TEMPS D'ASSERV.", theme.MARKER),
+        ):
+            canvas.create_rectangle(0, 0, 4, self.hauteur + 2, fill=color, outline="")
+            canvas.create_text(16, 16, text=caption, fill=theme.MUTED,
+                               font=theme.FONT_CAPTION, anchor="w")
+
     def actions_binding(self) :
         if DEBUG :
             print(type(self).__name__+".actions_binding()")
@@ -276,8 +293,11 @@ class Screen(Observer) :
             # Normaliser par rapport à y_axis_max au lieu de 100
             y = height - margin_y - (v_adjusted / self.y_axis_max) * (height - margin_y - 10)
             coords.extend((x, y))
+        color = theme.CURVE_COLORS.get(color, color)
+        dash = (6, 4) if name == "vitesse_reference" else None
         self.visualisation.delete(name)
-        self.visualisation.create_line(coords, fill=color, smooth=1, width=3, tags=name)
+        self.visualisation.create_line(coords, fill=color, smooth=1, width=2, dash=dash,
+                                       capstyle="round", joinstyle="round", tags=name)
 
     def tracer_axes_temps(self, temps, name ):
         # height = int(self.visualisation['height'])
@@ -286,7 +306,7 @@ class Screen(Observer) :
         margin_x = 40
         t =margin_x +  (temps / 100) * (width - margin_x - 10)
         self.visualisation.delete(name)
-        self.visualisation.create_line(t, 0, t, height, fill="yellow", width=2, tags=name)
+        self.visualisation.create_line(t, 10, t, height - 20, fill=theme.MARKER, width=1, dash=(3, 3), tags=name)
 
     def resize(self,event):
         if DEBUG :
@@ -312,24 +332,33 @@ class Screen(Observer) :
         margin_y = 20
 
         self.visualisation.delete("axes")
-        self.visualisation.create_line(margin_x, height - margin_y, width - 10, height - margin_y, width=2, arrow=tk.LAST, tags="axes", fill="white")
-        self.visualisation.create_line(margin_x, height - margin_y, margin_x, 10, width=2, arrow=tk.LAST, tags="axes", fill="white")
+
+        # Grille de fond
+        for i in range(20, 101, 20):
+            x = margin_x + (i / 100) * (width - margin_x - 10)
+            self.visualisation.create_line(x, 10, x, height - margin_y, fill=theme.GRID, tags=("axes", "grid"))
+        for k in range(1, 6):
+            y = height - margin_y - (k / 5) * (height - margin_y - 10)
+            self.visualisation.create_line(margin_x, y, width - 10, y, fill=theme.GRID, tags=("axes", "grid"))
+
+        self.visualisation.create_line(margin_x, height - margin_y, width - 10, height - margin_y, width=1, arrow=tk.LAST, tags="axes", fill=theme.AXIS)
+        self.visualisation.create_line(margin_x, height - margin_y, margin_x, 10, width=1, arrow=tk.LAST, tags="axes", fill=theme.AXIS)
 
         # Label des axes - dynamique selon ce qui est observé
-        self.visualisation.create_text(width - 20, height - 10, text="t (s)", font=("Arial", 10), tags="axes", fill="white")
+        self.visualisation.create_text(width - 20, height - 8, text="t (s)", font=theme.FONT_SMALL, tags="axes", fill=theme.MUTED)
         if self.observe_vitesse == 1:
             y_label = "V (RPM)"
         else:
             y_label = "I (mA)"
-        self.visualisation.create_text(20, 15, text=y_label, font=("Arial", 10), tags="axes", fill="white")
+        self.visualisation.create_text(margin_x + 6, 12, text=y_label, font=theme.FONT_CAPTION, tags="axes", fill=theme.MUTED, anchor="w")
 
         # Axe X : temps (0-100 échantillons = 0-20 secondes à 5 Hz)
         for i in range(0, 101, 20):
             x = margin_x + (i / 100) * (width - margin_x - 10)
-            self.visualisation.create_line(x, height - margin_y - 5, x, height - margin_y + 5, tags="axes" , fill="white")
+            self.visualisation.create_line(x, height - margin_y, x, height - margin_y + 4, tags="axes" , fill=theme.AXIS)
             # Convertir échantillons en secondes (100 échantillons = 20s car 5 échantillons/s)
             time_seconds = i / 5
-            self.visualisation.create_text(x, height - margin_y + 15, text=str(int(time_seconds)), font=("Arial", 8), tags="axes", fill="white")
+            self.visualisation.create_text(x, height - margin_y + 12, text=str(int(time_seconds)), font=theme.FONT_SMALL, tags="axes", fill=theme.MUTED)
 
         # Axe Y : valeur (dynamique selon y_axis_max ET scale_factor)
         # Calculer la valeur max réelle affichée (en tenant compte du facteur d'échelle)
@@ -343,17 +372,19 @@ class Screen(Observer) :
         
         for i in range(0, int(max_displayed) + 1, step):
             y = height - margin_y - (i / self.y_axis_max) * (height - margin_y - 10)
-            self.visualisation.create_line(margin_x - 5, y, margin_x + 5, y, tags="axes" , fill="white")
+            self.visualisation.create_line(margin_x - 4, y, margin_x, y, tags="axes" , fill=theme.AXIS)
             # Afficher la valeur réelle en tenant compte du scale_factor ET du vertical_offset
             real_value = int(i * self.scale_factor - self.vertical_offset * self.scale_factor)
-            self.visualisation.create_text(margin_x - 20, y, text=str(real_value), font=("Arial", 8), tags="axes", fill="white")
+            self.visualisation.create_text(margin_x - 8, y, text=str(real_value), font=theme.FONT_SMALL, tags="axes", fill=theme.MUTED, anchor="e")
+
+        self.visualisation.tag_lower("grid")
 
     def layout(self) :
-        self.frame.pack(padx=5, pady=5)
-        self.vitesse.pack(side="left", padx=5)
-        self.intensite.pack(side="left", padx=5)
-        self.temps_aservissement.pack(side="left", padx=5)
-        self.visualisation.pack(side="left", padx=5)
+        self.frame.pack(padx=8, pady=(4, 10), anchor="w")
+        self.vitesse.pack(side="left", padx=(0, 10))
+        self.intensite.pack(side="left", padx=(0, 10))
+        self.temps_aservissement.pack(side="left")
+        self.visualisation.pack(side="left", padx=8, pady=(0, 8))
 
 if   __name__ == "__main__" :
    root=tk.Tk()
