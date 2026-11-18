@@ -1,0 +1,14 @@
+../Core/Src/main.c:72:5:main	21
+../Core/Src/main.c:283:6:SystemClock_Config	3
+../Core/Src/main.c:317:13:MX_TIM1_Init	1
+../Core/Src/main.c:359:13:MX_TIM3_Encoder_Init	1
+../Core/Src/main.c:395:13:MX_ADC1_Init	1
+../Core/Src/main.c:420:13:MX_USART2_UART_Init	1
+../Core/Src/main.c:442:13:MX_GPIO_Init	1
+../Core/Src/main.c:491:6:Motor_Forward	1
+../Core/Src/main.c:496:6:Motor_Reverse	1
+../Core/Src/main.c:501:6:Motor_Brake	1
+../Core/Src/main.c:511:6:Motor_Release	1
+../Core/Src/main.c:522:6:Error_Handler	1
+../Core/Src/main.c:531:6:HAL_UART_RxCpltCallback	22
+../Core/Src/main.c:623:6:SetDutyCycle	3
